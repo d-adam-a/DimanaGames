@@ -1,0 +1,93 @@
+﻿@page "/"
+
+<style>
+    .container {
+        width: 400px;
+    }
+
+    button {
+        width: 100px;
+        height: 100px;
+        font-size: 50px;
+    }
+</style>
+
+<PageTitle>Dimana Games</PageTitle>
+
+<div class="container">
+    <div class="row">
+        @for(var animalNumber = 0; animalNumber < shuffledAnimals.Count; animalNumber++)
+        {
+            string animal = shuffledAnimals[animalNumber];
+            string animalDescription = $"Animal #{animalNumber}";
+
+            <div class="col-3">
+                <button @onclick = "(() => ButtonClick(animal, animalDescription))" type="button" class="btn btn-outline-dark">
+                    <h1>@animal</h1>
+                </button>
+            </div>
+        }
+    </div> 
+</div>
+    
+@code {
+    List<string> animals = new List<string>()//Membuat list bertipe data string berisi gambar hewan
+    {
+        "🐒", "🐒",
+        "🐶", "🐶",
+        "🐫", "🐫",
+        "🐤", "🐤",
+        "🐮", "🐮",
+        "🐈", "🐈",
+        "🦒", "🦒",
+        "🦓", "🦓"
+    };
+
+    List<string> shuffledAnimals = new List<string>();//Membuat list bertipe data string
+
+    private void SetUpGame()//Memulai Game
+    {
+        Random random = new Random();//Membuat objek random
+        shuffledAnimals = animals
+        .OrderBy(item => random.Next())//Mengganti urutan menjadi random
+        .ToList();
+        i = 0;
+    }
+
+    protected override void OnInitialized()//Memuat halaman di awal
+    {
+        SetUpGame();//Memanggil method Memulai Game
+    }
+
+    string clickedAnimal = string.Empty;
+    string clickedAnimalDescription = string.Empty;
+    int i = 0;
+
+    private void ButtonClick(string animal, string animalDescription)//Method ketika diklik
+    {
+        if(clickedAnimal == string.Empty)//Kondisi ketika kosong
+        {
+            clickedAnimal = animal;
+            clickedAnimalDescription = animalDescription;
+        }
+        else if(clickedAnimal == animal && clickedAnimalDescription != animalDescription)//Kondisi ketika diklik gambar ditempat yang sama
+        {
+            shuffledAnimals = shuffledAnimals
+                .Select(item => item.Replace(animal, string.Empty))
+                .ToList();
+
+            clickedAnimal = string.Empty;
+
+            //Mengulang game ketika gambar habis
+            i++;
+            if(i == 8)
+            {
+                SetUpGame();
+            }
+        }
+        else
+        {
+            clickedAnimal = string.Empty;
+        }
+    }
+}
